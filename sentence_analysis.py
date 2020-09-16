@@ -1,6 +1,13 @@
 import discord
 from google.cloud import language_v1
 from google.cloud.language_v1 import enums
+import requests
+
+image_get_url = "http://www.google.com/search"
+params = {
+    "tbm" : "isch",
+    "q" : ""
+}
 
 def sample_classify_text(text_content):
     """
@@ -42,28 +49,35 @@ def sample_classify_text(text_content):
         result[category.name] = category.confidence
     return result
 
-'''
-def message_list_to_text(message_list):
-    result = ""
-    for i in message_list:
-        result += ".\n" + i
-    return result
-'''
 
 client = discord.Client()
 
 @client.event
 async def on_ready():
-    print('We have logged in as {0.user}'.format(client))
+    print('Logged in as {0.user}'.format(client))
 
 @client.event
 async def on_message(message):
+    """
+    Contents of this function trigger upon a new message being typed in a discord channel that the bot has access to
+
+    message: Contains the discord message object that triggered this event
+    """
+    #Check if the event was triggered by the bot
     if message.author == client.user:
         return
 
-    if message.content.lower().startswith("fuck you"):
-        await message.channel.send("no u")
+    #Uses webscraping concepts to send a picture of the input search term (that follows '$searchpic')
+    if message.content.startswith("$searchpic"):
+        params["q"] = message.content[11:]
+        req = requests.get(image_get_url, params = params)
+        
+        #TODO
 
+        await message.channel.send(file = discord.File("test_pic_gc.jpg")) #use files = array of Discord File objects for multiple pics
+        await message.channel.send("https://i.imgur.com/TXVEc7N.jpg") #uses Discord's feature of turning image links into In-App previews of the image
+
+    #Uses Google Natural Language API to associate user messages with themes and sends the top 3 most common themes
     if message.content.startswith('$themeAnalysis'):
         messages = await message.channel.history(limit=10000).flatten()
         #msg_content = message.content.strip()
@@ -87,9 +101,9 @@ async def on_message(message):
                         break
                     else:
                         index += 1
-                        final += key + " " + str(value) + "\n"
+                        final += str(index) + ". " + str(key)[1:] + "\n"
                 if len(final) > 0:
-                    await message.channel.send(final)
+                    await message.channel.send("The top 3 themes of "+ str(user) + "'s messages are:\n" + final)
                 else:
                     await message.channel.send("None of " + str(user) + "'s messages have more than 20 words...")
         else:
@@ -112,13 +126,12 @@ async def on_message(message):
                     break
                 else:
                     index += 1
-                    final += key + " " + str(value) + "\n"
+                    final += str(index) + ". " + str(key)[1:] + "\n"
             if len(final) > 0:
-                await message.channel.send(final)
+                await message.channel.send("The top 3 themes of "+ str(message.author) + "'s messages are:\n" + final)
             else:
-                await message.channel.send("None of " + message.author.username + "'s messages have more than 20 words...")
+                await message.channel.send("None of " + str(message.author) + "'s messages have more than 20 words...")
             
-
 
 client.run('NzU1MTY0Mzc5MzU5NjA4OTEz.X1_Tog.fpHPEYxry0QmUsd6re7YS3FYYjw')
 
