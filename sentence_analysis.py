@@ -61,6 +61,9 @@ async def on_message(message):
     if message.author == client.user:
         return
 
+    if message.content.lower().startswith("fuck you"):
+        await message.channel.send("no u")
+
     if message.content.startswith('$themeAnalysis'):
         messages = await message.channel.history(limit=10000).flatten()
         #msg_content = message.content.strip()
@@ -85,7 +88,10 @@ async def on_message(message):
                     else:
                         index += 1
                         final += key + " " + str(value) + "\n"
-                await message.channel.send(final)
+                if len(final) > 0:
+                    await message.channel.send(final)
+                else:
+                    await message.channel.send("None of " + str(user) + "'s messages have more than 20 words...")
         else:
             #use message author messages
             result = dict()
@@ -107,7 +113,10 @@ async def on_message(message):
                 else:
                     index += 1
                     final += key + " " + str(value) + "\n"
-            await message.channel.send(final)
+            if len(final) > 0:
+                await message.channel.send(final)
+            else:
+                await message.channel.send("None of " + message.author.username + "'s messages have more than 20 words...")
             
 
 
