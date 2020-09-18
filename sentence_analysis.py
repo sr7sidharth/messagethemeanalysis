@@ -5,6 +5,7 @@ from google.cloud.language_v1 import enums
 import requests
 from bs4 import BeautifulSoup
 import random
+import credentials
 
 random.seed()
 image_get_url = "http://www.google.com/search"
@@ -90,8 +91,8 @@ async def on_message(message):
             await message.channel.send(i['src'])
         '''
         await message.channel.send(soup.findAll('img')[random_index]['src']) #Issue with this is, the pictures are not the full res versions - need to click on the image and then copy that image address
-        #await message.channel.send(file = discord.File("test_pic_gc.jpg")) #use files = array of Discord File objects for multiple pics
-        #await message.channel.send("https://i.imgur.com/TXVEc7N.jpg") #uses Discord's feature of turning image links into In-App previews of the image
+        #await message.channel.send(file = discord.File("local_picture.jpg")) #use files = array of Discord File objects for multiple pics
+        #await message.channel.send("https://link_to_picture.jpg") #uses Discord's feature of turning image links into In-App previews of the image
 
     #Urban dictionary word search
     if message.content.startswith("$ud"):
@@ -160,4 +161,4 @@ async def on_message(message):
                 await message.channel.send("None of " + str(message.author) + "'s messages have more than 20 words...")
             
 
-client.run('NzU1MTY0Mzc5MzU5NjA4OTEz.X1_Tog.fpHPEYxry0QmUsd6re7YS3FYYjw')
+client.run(credentials.discord_token)

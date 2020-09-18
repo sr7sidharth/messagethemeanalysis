@@ -11,7 +11,7 @@ Required software:
 6. Requests 
 
 On every run:
-1. set environment variable: $env:GOOGLE_APPLICATION_CREDENTIALS="discordbot-sentence-analysis-e100955d75a7.json" in PowerShell
+1. set environment variable: $env:GOOGLE_APPLICATION_CREDENTIALS="GAC.json" in PowerShell
 
 
 Backstory:
