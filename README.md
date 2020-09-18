@@ -7,6 +7,8 @@ Required software:
 2. Natural Language API access
 3. DiscordPy
 4. Discord Bot setup
+5. Beautiful Soup
+6. Requests 
 
 On every run:
 1. set environment variable: $env:GOOGLE_APPLICATION_CREDENTIALS="discordbot-sentence-analysis-e100955d75a7.json" in PowerShell
@@ -19,3 +21,6 @@ So, I set out to create a bot that would scan a user's messages and come up with
 in this example, it would scan her messages and return a number showing that she did or did not have a propensity to set herself up for the ensuing jokes.
 Then, I realized that instead of building my own primitive way of doing this - using webscraping to find synonyms for the requested theme and then check those against the messages sent by the user, 
 and instead use a much more robust API, provided by Google, to make this project a lot cleaner, accurate and efficient.
+
+Added features: 
+1. Picture search - used webscraping techniques, powered by Requests and BeautifulSoup to make the bot post 3 of the top results for a particular search term

@@ -1,7 +1,9 @@
 import discord
+import json
 from google.cloud import language_v1
 from google.cloud.language_v1 import enums
 import requests
+from bs4 import BeautifulSoup
 
 image_get_url = "http://www.google.com/search"
 params = {
@@ -73,9 +75,12 @@ async def on_message(message):
         req = requests.get(image_get_url, params = params)
         
         #TODO
+        soup = BeautifulSoup(req.text, features="html.parser")
+        #print(soup.findAll('img')[0].src)
 
-        await message.channel.send(file = discord.File("test_pic_gc.jpg")) #use files = array of Discord File objects for multiple pics
-        await message.channel.send("https://i.imgur.com/TXVEc7N.jpg") #uses Discord's feature of turning image links into In-App previews of the image
+        await message.channel.send(soup.findAll('img')[5]['src'])
+        #await message.channel.send(file = discord.File("test_pic_gc.jpg")) #use files = array of Discord File objects for multiple pics
+        #await message.channel.send("https://i.imgur.com/TXVEc7N.jpg") #uses Discord's feature of turning image links into In-App previews of the image
 
     #Uses Google Natural Language API to associate user messages with themes and sends the top 3 most common themes
     if message.content.startswith('$themeAnalysis'):
@@ -134,4 +139,3 @@ async def on_message(message):
             
 
 client.run('NzU1MTY0Mzc5MzU5NjA4OTEz.X1_Tog.fpHPEYxry0QmUsd6re7YS3FYYjw')
-
