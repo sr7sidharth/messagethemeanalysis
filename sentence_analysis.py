@@ -4,11 +4,18 @@ from google.cloud import language_v1
 from google.cloud.language_v1 import enums
 import requests
 from bs4 import BeautifulSoup
+import random
 
+random.seed()
 image_get_url = "http://www.google.com/search"
-params = {
+params_img_get = {
     "tbm" : "isch",
     "q" : ""
+}
+
+ud_url = "https://www.urbandictionary.com/define.php"
+params_ud = {
+    "term" : ""
 }
 
 def sample_classify_text(text_content):
@@ -71,16 +78,31 @@ async def on_message(message):
 
     #Uses webscraping concepts to send a picture of the input search term (that follows '$searchpic')
     if message.content.startswith("$searchpic"):
-        params["q"] = message.content[11:]
-        req = requests.get(image_get_url, params = params)
-        
-        #TODO
+        params_img_get["q"] = message.content[11:]
+        req = requests.get(image_get_url, params = params_img_get)
+    
         soup = BeautifulSoup(req.text, features="html.parser")
-        #print(soup.findAll('img')[0].src)
-
-        await message.channel.send(soup.findAll('img')[5]['src'])
+        results = []
+        random_index = random.randrange(1, 15)
+        '''
+        results = soup.findAll('img')[1:4]
+        for i in results:
+            await message.channel.send(i['src'])
+        '''
+        await message.channel.send(soup.findAll('img')[random_index]['src']) #Issue with this is, the pictures are not the full res versions - need to click on the image and then copy that image address
         #await message.channel.send(file = discord.File("test_pic_gc.jpg")) #use files = array of Discord File objects for multiple pics
         #await message.channel.send("https://i.imgur.com/TXVEc7N.jpg") #uses Discord's feature of turning image links into In-App previews of the image
+
+    #Urban dictionary word search
+    if message.content.startswith("$ud"):
+        params_ud["term"] = message.content[4:]
+        req = requests.get(ud_url, params = params_ud)
+
+        soup = BeautifulSoup(req.text, features="html.parser")
+        for i in soup.findAll('meta'):
+            if 'content' in i.attrs and 'name' in i.attrs:
+                if i['name'] == 'Description':
+                    await message.channel.send(i['content'])
 
     #Uses Google Natural Language API to associate user messages with themes and sends the top 3 most common themes
     if message.content.startswith('$themeAnalysis'):

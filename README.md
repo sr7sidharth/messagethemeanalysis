@@ -24,3 +24,4 @@ and instead use a much more robust API, provided by Google, to make this project
 
 Added features: 
 1. Picture search - used webscraping techniques, powered by Requests and BeautifulSoup to make the bot post 3 of the top results for a particular search term
+2. Urban dictionary definition lookup
