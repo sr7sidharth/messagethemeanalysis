@@ -7,7 +7,11 @@ from bs4 import BeautifulSoup
 import random
 import credentials
 
-random.seed()
+'''
+Initialization of DiscordPy, APIs, and Random 
+'''
+client = discord.Client()
+
 image_get_url = "http://www.google.com/search"
 params_img_get = {
     "tbm" : "isch",
@@ -19,13 +23,19 @@ params_ud = {
     "term" : ""
 }
 
+random.seed()
+
+'''
+Modified sample_classify_text function from Google Natural Language API
+'''
+
 def sample_classify_text(text_content):
-    """
+    '''
     Classifying Content in a String
 
     Args:
       text_content The text content to analyze. Must include at least 20 words.
-    """
+    '''
 
     client = language_v1.LanguageServiceClient()
 
@@ -60,19 +70,17 @@ def sample_classify_text(text_content):
     return result
 
 
-client = discord.Client()
-
 @client.event
 async def on_ready():
     print('Logged in as {0.user}'.format(client))
 
 @client.event
 async def on_message(message):
-    """
+    '''
     Contents of this function trigger upon a new message being typed in a discord channel that the bot has access to
 
     message: Contains the discord message object that triggered this event
-    """
+    '''
     #Check if the event was triggered by the bot
     if message.author == client.user:
         return
@@ -86,6 +94,7 @@ async def on_message(message):
         results = []
         random_index = random.randrange(1, 15)
         '''
+		The following code snippet sends multiple images
         results = soup.findAll('img')[1:4]
         for i in results:
             await message.channel.send(i['src'])
@@ -110,9 +119,15 @@ async def on_message(message):
         messages = await message.channel.history(limit=10000).flatten()
         #msg_content = message.content.strip()
         if message.mentions:
+		'''
+		Message.mentions returns a list of User object that were mentioned (@User) in the message
+		'''
             for user in message.mentions:
                 result = dict()
                 for x in messages:
+				'''
+				Reads the last 10000 messages and builds a dict of {Topic : Number of messages}
+				'''
                     if x.author.id == user.id:
                         if len(x.content.split()) > 20:
                             temp_dict = sample_classify_text(x.content)
@@ -124,6 +139,9 @@ async def on_message(message):
                 sorted_result = sorted(result.items(), key=lambda x : x[1], reverse = True)
                 final = ""
                 index = 0
+				'''
+				Get the top 3 themes of a user's messages 
+				'''
                 for key,value in sorted_result:
                     if index == 3:
                         break
@@ -160,5 +178,8 @@ async def on_message(message):
             else:
                 await message.channel.send("None of " + str(message.author) + "'s messages have more than 20 words...")
             
-
+	
+'''
+Run the bot
+'''
 client.run(credentials.discord_token)

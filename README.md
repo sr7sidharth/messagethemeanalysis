@@ -1,4 +1,5 @@
 # messageanalysisbot  
+(NOTE: This repository is a fresh copy of my previous repository to remove traces of credentials)
 Discord bot that reads the past 10,000 messages in the current channel for the requested user(s) messages and displays the top 3 most frequent message themes.
 Uses Google Natural Language API for word processing
 
